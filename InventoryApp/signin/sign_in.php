@@ -21,7 +21,7 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 	if ($mysqli->connect_errno) {
 		$myerrno = 0;
 	} else {
-		echo "Connected to database successfully.<br>";
+		//echo "Connected to database successfully.<br>";
 	}
 
 	// Check if user entered name and password
@@ -40,8 +40,8 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 		$rowcount;
 		
 		$username = $_SESSION['username'];
-		echo "Username: " . $uername. "<br>";
-		echo "" . $_SESSION['username'] . "<br>";
+		//echo "Username: " . $username. "<br>";
+		//echo "" . $_SESSION['username'] . "<br>";
 	
 		// Prepare select
 		if (!($stmt = $mysqli->prepare("SELECT username FROM SiteUsers WHERE username='$username'"))) {
@@ -117,7 +117,7 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 		}
 		//echo "Mysuccessno: " . $mysuccessno. "<br>";
 	}
-	echo '<pre>' . htmlspecialchars(print_r(get_defined_vars(), true));
+	//echo '<pre>' . htmlspecialchars(print_r(get_defined_vars(), true));
 	//var_dump($_SESSION);
 	if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 		echo '<META HTTP-EQUIV="Refresh" Content="0; URL=index.php">';    
@@ -138,6 +138,7 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
     <link href="signin.css" rel="stylesheet">
 	<script src="jquery-1.10.2.js"></script>
 	<script src="jquery.validate.min.js"></script>
+	<script src="../dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		//shows and hides forms and buttons
 		$(document).ready(function() {
@@ -198,7 +199,7 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 					$("#message").show();
 					break;
 				case 3:
-					$("#message").html("Username does not exist. Please <a href='create_account.php'>create an account.</a>");
+					$("#message").html("Username does not exist. Please <a href='create_new_account.php'>create an account.</a>");
 					$("#message").show();
 					break;
 				case 4:

@@ -77,7 +77,7 @@ session_start();
 							echo "Bound to strings successfully.<br>";
 							//Execute insert
 							if (!$stmt->execute()) {
-								//echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
+								echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
 								$myerrno = 2;
 							} else {
 								$mysuccessno = 6;
@@ -94,7 +94,7 @@ session_start();
 		echo '<META HTTP-EQUIV="Refresh" Content="0; URL=sign_in.php">';    
 		exit;
 	}
-	echo '<pre>' . htmlspecialchars(print_r(get_defined_vars(), true));
+	//echo '<pre>' . htmlspecialchars(print_r(get_defined_vars(), true));
 ?>
 <html lang="en">
   <head>
@@ -109,6 +109,7 @@ session_start();
     <link href="signin.css" rel="stylesheet">
 	<script src="jquery-1.10.2.js"></script>
 	<script src="jquery.validate.min.js"></script>
+	<script src="../dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#message").hide();

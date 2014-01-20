@@ -31,6 +31,24 @@ body {
   border-top: 1px solid #e5e5e5;
 }
 
+#float_right {
+	float: right;
+	margin-right: 2%;
+}
+
+#search_results_div {
+	border: 1px solid #428BCA;
+}
+
+#search_bar {
+	width: 80%;
+	border-radius: 4px;
+}
+
+#search_button {
+	padding: 2px 24px;
+}
+
 /* Customize container */
 @media (min-width: 768px) {
   .container {
