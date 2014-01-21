@@ -43,9 +43,10 @@ if ($_SESSION['logged_in']==0) {
 		<div class="container">
 			<div class="header">
 				<ul class="nav nav-pills pull-right">
-					<li class="active"><a href="#">Item Lookup</a></li>
-					<li><a href="add.html">Add Item</a></li>
-					<li><a href="check.html">Check In/Out</a></li>
+					<li><a href="admin.php">New Search</a></li>
+					<li class="active"><a href="#">Item Details</a></li>
+					<li><a href="add.php">Add Item</a></li>
+					<li><a href="check.php">Check In/Out</a></li>
 				</ul>
 				<h3 class="text-muted">Inventory Locator</h3>
 			</div>
@@ -70,13 +71,13 @@ if ($_SESSION['logged_in']==0) {
 								//echo "Connected to database successfully.<br>";
 							}
 
-							if ((!empty($_POST["search_query"]))) {	
+							if ((!empty($_GET["barcodeID"]))) {	
 								// Store post values
-								$search_query = $_POST['search_query'];
-								//echo "" . $search_query;
+								$barcodeID = $_GET['barcodeID'];
+								//echo "barcodeID: " . $barcodeID . "<br>";
 								
 								// Prepare select
-								if (!($stmt = $mysqli->prepare("SELECT barcodeID, name FROM Item WHERE name LIKE '%$search_query%'"))) {
+								if (!($stmt = $mysqli->prepare("SELECT barcodeID, name, num_available, checkIN, checkOUT, description, accessories, pages, OS FROM Item WHERE barcodeID=$barcodeID"))) {
 									//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 									$myerrno = 1;
 								} else {
@@ -89,18 +90,27 @@ if ($_SESSION['logged_in']==0) {
 								} else {
 									// execute was successful
 									$mysuccessno = 2;
-									$stmt->bind_result($barcodeID, $itemname);
-									echo "<table><tr><td style='text-decoration: underline; width: 50%'>barcodeID</td><td style='text-decoration: underline; width: 50%'>name</td></tr>\n";
-									while ($stmt->fetch()) {
-										echo "<tr><td><a href='item_details.php'>" . $barcodeID . "</a></td><td>" . $itemname . "</td></tr>\n";
-									}
-									echo "</table>";
+									$stmt->bind_result($barcodeID, $itemname, $available, $checkIN, $checkOUT, $description, $accessories, $pages, $OS);
+									echo "
+										<table>
+											<td>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Barcode ID:<input name='IDfill' type='text' value=$barcodeID readonly /></tr><br>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Item Name:<input name='IDfill' type='text' value=$itemname readonly /></tr><br>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Number Available:<input name='IDfill' type='text' value=$available readonly /></tr><br>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Check In:<input name='IDfill' type='text' value=$checkIN readonly /></tr><br>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Check Out:<input name='IDfill' type='text' value=$checkOUT readonly /></tr><br>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Description:<input name='IDfill' type='text' value=$description readonly /></tr><br>											
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Accessories:<input name='IDfill' type='text' value=$accessories readonly /></tr><br>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'># Pages:<input name='IDfill' type='text' value=$pages readonly /></tr><br>
+												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Operating System:<input name='IDfill' type='text' value=$OS readonly /></tr><br>
+											</td>									
+										</table>";
 									$stmt->close();
 								}
 							}
 						}
 					?>
-					<br><br><br><br><br><br><br>
+					<br><br><br>
 				</div>
 			</div>
 			<div id="message" style="margin-left:50px"></div><br>

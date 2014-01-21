@@ -36,13 +36,8 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 		}
 		$password = $_POST['password'];
 		$comparename = NULL;
-		$comparepassword = NULL;
-		$rowcount;
-		
-		$username = $_SESSION['username'];
-		//echo "Username: " . $username. "<br>";
-		//echo "" . $_SESSION['username'] . "<br>";
-	
+		$comparepassword = NULL;		
+		$username = $_SESSION['username'];	
 		// Prepare select
 		if (!($stmt = $mysqli->prepare("SELECT username FROM SiteUsers WHERE username='$username'"))) {
 			//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
@@ -108,8 +103,6 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 							unset($_SESSION['username']);
 							$_SESSION['username'] = $username;
 							$_SESSION['logged_in']=1;
-							echo "Username variable is: " .$_SESSION['username'] . "<br>";
-							echo "Logged in variable is: " .$_SESSION['username'] . "<br>";
 						}
 					}
 				}
@@ -224,18 +217,19 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 				<li><a href="create_new_account.php">Create Account</a></li>
 			</ul>
 			<h3 class="text-muted">Inventory Locator</h3>
-			<form class="form-signin" action = "sign_in.php" method="POST" enctype="multipart/form-data">
-				<h2 class="form-signin-heading">Sign In</h2>
-				<input name="username" type="text" class="form-control" placeholder="Email address" required autofocus>
-				<input name="password" type="password" class="form-control" placeholder="Password" required>
-				<label class="checkbox">
-				  <input type="checkbox" value="remember-me"> Remember me
-				</label>
-				<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-			</form>
-			<div id="message" style="margin-left:50px"></div><br>
-			<div id = "message_success" style="margin-left:50px"></div>
 		</div>
+		<form class="form-signin" action = "sign_in.php" method="POST" enctype="multipart/form-data">
+			<h2 class="form-signin-heading">Sign In</h2>
+			<input name="username" type="text" class="form-control" placeholder="Email address" required autofocus>
+			<input name="password" type="password" class="form-control" placeholder="Password" required>
+			<label class="checkbox">
+			  <input type="checkbox" value="remember-me"> Remember me
+			</label>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button><br>
+			<a href="sign_in.php">Forgot Password?</a>
+		</form>
+		<div id="message" style="margin-left:50px"></div><br>
+		<div id = "message_success" style="margin-left:50px"></div>
     </div>
   </body>
 </html>

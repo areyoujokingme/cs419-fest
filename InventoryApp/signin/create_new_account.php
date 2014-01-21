@@ -13,7 +13,7 @@ session_start();
 	if ($mysqli->connect_errno) {
 		$myerrno = 0;
 	} else {
-		echo "Connected to database successfully.<br>";
+		//echo "Connected to database successfully.<br>";
 	}
 	
 	// Check if user entered name and password
@@ -22,25 +22,21 @@ session_start();
 		$name = $_POST['create_username'];
 		$password = $_POST['create_password'];
 		$password2 = $_POST['password_verify'];
-		$rowcount;
-		echo "" . $name;
-		echo "" . $password;
-		echo "" . $password2;
 		
 		if ($password != $password2) {
 			$myerrno = 5;
-			echo "It says the passwords are NOT identical.<br>";
+			//echo "It says the passwords are NOT identical.<br>";
 		} else {
 			$mysuccessno = 5;
-			echo "Passwords match.<br>";
+			//echo "Passwords match.<br>";
 			//check to see if username already exists
 			// Prepare select
 			if (!($stmt = $mysqli->prepare("SELECT username FROM SiteUsers WHERE username='$name'"))) {
-				echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+				//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 				$myerrno = 1;
 			} else {
 				$mysuccessno = 1;
-				echo "Prepared username select successfully.<br>";
+				//echo "Prepared username select successfully.<br>";
 			}
 			// Execute select
 			if (!$stmt->execute()) {
@@ -48,7 +44,7 @@ session_start();
 				$myerrno = 2;
 			} else {
 				// execute was successful
-				echo "Executed username select successfully.<br>";
+				//echo "Executed username select successfully.<br>";
 				$mysuccessno = 2;
 				$stmt->store_result();
 				$rowcount = $stmt->num_rows;
@@ -66,7 +62,7 @@ session_start();
 						$myerrno = 1;
 					} else {
 						$mysuccessno = 1;
-						echo "Prepared username select successfully.<br>";
+						//echo "Prepared username select successfully.<br>";
 						//Bind parameters
 						if (!$stmt->bind_param("ss", $name, $password)) {
 							//echo "Bind failed: " . $stmt->errno . " " . $stmt->error;
@@ -74,14 +70,14 @@ session_start();
 						} else {
 							//bind passed 
 							$mysuccessno = 4;
-							echo "Bound to strings successfully.<br>";
+							//echo "Bound to strings successfully.<br>";
 							//Execute insert
 							if (!$stmt->execute()) {
-								echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
+								//echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
 								$myerrno = 2;
 							} else {
 								$mysuccessno = 6;
-								echo "Execute insert row successfully.<br>";
+								//echo "Execute insert row successfully.<br>";
 							}		
 						}
 					}
@@ -196,19 +192,19 @@ session_start();
 				<li class="active"><a href="#">Create Account</a></li>
 			</ul>
 			<h3 class="text-muted">Inventory Locator</h3>
-			<form class="form-signin" action="create_new_account.php" method = "POST" enctype="multipart/form-data">
-				<h2 class="form-signin-heading">Create Account</h2>
-				<input name="create_username" type="text" class="form-control" placeholder="Email address" required autofocus>
-				<input name="create_password" type="password" class="form-control" placeholder="Password" required>
-				<input name="password_verify" type="password" class="form-control" placeholder="Re-enter Password" required>
-				<label class="checkbox">
-				  <input type="checkbox" value="remember-me"> Remember me
-				</label>
-				<button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
-			</form>
-			<div id="message" style="margin-left:50px"></div><br>
-			<div id = "message_success" style="margin-left:50px"></div>
-		</div>
+		</div>			
+		<form class="form-signin" action="create_new_account.php" method = "POST" enctype="multipart/form-data">
+			<h2 class="form-signin-heading">Create Account</h2>
+			<input name="create_username" type="text" class="form-control" placeholder="Email address" required autofocus>
+			<input name="create_password" type="password" class="form-control" placeholder="Password" required>
+			<input name="password_verify" type="password" class="form-control" placeholder="Re-enter Password" required>
+			<label class="checkbox">
+			  <input type="checkbox" value="remember-me"> Remember me
+			</label>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Create Account</button>
+		</form>
+		<div id="message" style="margin-left:50px"></div><br>
+		<div id = "message_success" style="margin-left:50px"></div>
     </div>
   </body>
 </html>

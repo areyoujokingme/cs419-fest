@@ -36,7 +36,7 @@ if ($_SESSION['logged_in']==0) {
 			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 				<li class="divider"></li>
 				<li><a href="../logout.php">Logout</a></li>
-				<li><a href="change_password.php">Change Password</a></li>
+				<li><a href="../change_password.php">Change Password</a></li>
 			</ul>
 		</div>
 		<br><br>
@@ -91,9 +91,14 @@ if ($_SESSION['logged_in']==0) {
 									// execute was successful
 									$mysuccessno = 2;
 									$stmt->bind_result($barcodeID, $itemname);
-									echo "<form id='item_detail_forward' action='item_details.php' method='POST' enctype='multipart/form-data'><table><tr><td style='text-decoration: underline; width: 50%'>barcodeID</td><td style='text-decoration: underline; width: 50%'>name</td></tr>\n";
+									echo "<form id='item_detail_forward' action='item_details.php' method='GET'>
+									<table>
+										<tr>
+											<td style='text-decoration: underline; width: 50%'>barcodeID</td>
+											<td style='text-decoration: underline; width: 50%'>name</td>
+										</tr>\n";
 									while ($stmt->fetch()) {
-										echo "<tr><td><button class='barcodeButton' type='submit'><a name='barcodeID'>" . $barcodeID . "</a></button></td><td>" . $itemname . "</td></tr>\n";
+										echo "<tr><td><button class='barcodeButton' name='barcodeID' value=$barcodeID type='submit'><a>" . $barcodeID . "</a></button></td><td>" . $itemname . "</td></tr>\n";
 									}
 									echo "</table></form>";
 									$stmt->close();
