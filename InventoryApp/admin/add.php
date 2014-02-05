@@ -53,7 +53,7 @@ if ($_SESSION['logged_in'] == 0) {
             dd {
                 text-align: left;
                 margin: 0 0 0 150px;
-                padding: 0 0 0.5em 0;
+                padding: 0 0 30px 0;
             }
 
             .optional{
@@ -91,65 +91,71 @@ if ($_SESSION['logged_in'] == 0) {
 
             <div class="jumbotron">
                 <form id="add_form" class="navbar-form" action="add.php" method="POST" enctype="multipart/form-data">
-                    <input name="add_barcode" type="hidden" value=<?php echo '"test1'.rand() .'"'?>>
-                    <ul id="form_list">
-                        <li>
-                            Item Type:
-                            <select form="add_form" name="add_type">
-                                <option></option>
-                                <option value="computer" onselect="showOptions(\"computer\")">Computer</option>
-                                <option value="embedded">Embedded System / Microcontroller</option>
-                                <option value="book">Book</option>
-                                <option value="magazine">Magazine</option>
-                                <option value="tablet">Tablet</option>
-                                <option value="accessory">Electronic Accessory</option>
-                            </select> 
-                        </li>
-                        <li>
-                            Item Name: <input name="add_name" type="text" placeholder="Name"> 
-                        </li>
-                        <li>
-                            Quantity: <input name="add_quantity" type="text"> 
-                        </li>
-                        <li class="optional" id="page_length">
-                            Page Length: <input name="add_length" type="text">
-                        </li>
-                        <li class="optional" id="ISBN">
-                            ISBN / ISSN: <input name="add_ISBN" type="text" placeholder="ISBN or ISSN">
-                        </li>
-                        <li class="optional" id="OS">
-                            Operating System: <input name="add_OS" type="text">
-                        </li>
-                        <li class="optional" id="manufacturer">
-                            Manufacturer: <input name="add_man" type="text">
-                        </li>
-                        <li class="optional" id="accessories">
-                            Additional Accessories:
-                        </li>
-                        <li class="optional" id="accessories_box">
-                            <textarea name="add_accessories" rows="2" form="add_form"></textarea> 
-                        </li>
-                        <li>
-                            Condition:
-                            <select form="add_form" name="add_condition">
-                                <option></option>
-                                <option value="new">New</option>
-                                <option value="very_good">Very Good</option>
-                                <option value="good">Good</option>
-                                <option value="fair">Fair</option>
-                                <option value="poor">Poor</option>
-                            </select> 
-                        </li>
-                        <li>
-                            Brief Description:
-                        </li>
-                        <li>
-                            <textarea name="add_description" rows="5" form="add_form"></textarea> 
-                        </li>
-                        <li>
-                            <input type="submit" text="Submit">
-                        </li>
-                    </ul>
+                    <input name="add_barcode" type="hidden" value=<?php echo '"test1' . rand() . '"' ?>>
+                    <table id="form_list">
+                        <tr>
+                            <th>Item Type</th>
+                            <td>
+                                <select form="add_form" name="add_type" onchange="showOptions()" id="type">
+                                    <option></option>
+                                    <option value="computer">Computer</option>
+                                    <option value="embedded">Embedded System / Microcontroller</option>
+                                    <option value="book">Book</option>
+                                    <option value="magazine">Magazine</option>
+                                    <option value="tablet">Tablet</option>
+                                    <option value="accessory">Electronic Accessory</option>
+                                </select> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Item Name</th>
+                            <td><input name="add_name" type="text" placeholder="Name"> </td>
+                        </tr>
+                        <tr>
+                            <th> Quantity</th>
+                            <td><input name="add_quantity" type="text"></td>
+                        </tr>
+                        <tr class="optional" id="page_length">
+                            <th>Page Length</th>
+                            <td><input name="add_length" type="text"></td>
+                        </tr>
+                        <tr class="optional" id="ISBN">
+                            <th>ISBN/ISSN</th>
+                            <td><input name="add_ISBN" type="text" placeholder="ISBN or ISSN"></td>
+                        </tr>
+                        <tr class="optional" id="OS">
+                            <th>Operating System</th>
+                            <td><input name="add_OS" type="text"></td>
+                        </tr>
+                        <tr class="optional" id="manufacturer">
+                            <th> Manufacturer</th>
+                            <td><input name="add_man" type="text"></td>
+                        </tr>
+                        <tr class="optional" id="accessories">
+                            <th>Additional Accessories</th>
+                            <td><textarea name="add_accessories" rows="2" form="add_form"></textarea></td>
+                        </tr>
+                        <tr>
+                            <th>Condition</th>
+                            <td>    
+                                <select form="add_form" name="add_condition">
+                                    <option></option>
+                                    <option value="new">New</option>
+                                    <option value="very_good">Very Good</option>
+                                    <option value="good">Good</option>
+                                    <option value="fair">Fair</option>
+                                    <option value="poor">Poor</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Brief Description</th>
+                            <td><textarea name="add_description" rows="5" form="add_form"></textarea> </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2"><input type="submit" text="Submit"></th>
+                        </tr>
+                    </table>
                 </form>
                 <div  id="add_confirmation">
                     <?php
@@ -258,21 +264,28 @@ if ($_SESSION['logged_in'] == 0) {
         </div>
     </body>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#message").hide();
-            $("#message_success").hide();
-
-            //print success and error messages, for feedback and debugging.
-            var mysuccessnumba = <?php //echo $mysuccessno;      ?>
-            0;
-            success(mysuccessnumba);
-            var myerrnumba = <?php //echo $myerrno;      ?>
-            0;
-            error(myerrnumba);
-        });
-        function showOptions(S){
-            if S.equals("computer"){
-                $("#OS").removeClass("optional");
+        function showOptions() {
+            var type_choice = document.getElementById("type").value;
+            $("#OS").addClass("optional");
+            $("#accessories").addClass("optional");
+            $("#accessories_box").addClass("optional");
+            $("#manufacturer").addClass("optional");
+            $("#page_length").addClass("optional");
+            $("#ISBN").addClass("optional");
+            switch (type_choice) {
+                case "computer":
+                case "tablet":
+                    $("#OS").removeClass("optional");
+                    $("#accessories").removeClass("optional");
+                    $("#accessories_box").removeClass("optional");
+                    $("#manufacturer").removeClass("optional");
+                    break;
+                case "book":
+                case "magazine":
+                    $("#page_length").removeClass("optional");
+                    $("#ISBN").removeClass("optional");
+                    break;
+            }
         }
     </script>
 </html>
