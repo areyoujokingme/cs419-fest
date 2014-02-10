@@ -34,26 +34,11 @@ if ($_SESSION['logged_in'] == 0) {
             }
         </script>
         <style type="text/css">
-            li {
-                list-style-type: none;
-                padding: 10px;
-                margin: 10px;
-            }
-            dt {
-                float: left;
-                clear: left;
-                width: 130px;
-                text-align: right;
-                font-weight: bold;
-                color: green;
-            }
-            dt:after {
-                content: ":";
-            }
-            dd {
-                text-align: left;
-                margin: 0 0 0 150px;
-                padding: 0 0 30px 0;
+            label {
+                float:left;
+                text-align:right;
+                display:block;
+                margin-right: 0.5em;
             }
 
             .optional{
@@ -91,54 +76,46 @@ if ($_SESSION['logged_in'] == 0) {
 
             <div class="jumbotron">
                 <form id="add_form" class="navbar-form" action="add.php" method="POST" enctype="multipart/form-data">
-                    <input name="add_barcode" type="hidden" value=<?php echo '"test1' . rand() . '"' ?>>
-                    <table id="form_list">
-                        <tr>
-                            <th>Item Type</th>
-                            <td>
-                                <select form="add_form" name="add_type" onchange="showOptions()" id="type">
-                                    <option></option>
-                                    <option value="computer">Computer</option>
-                                    <option value="embedded">Embedded System / Microcontroller</option>
-                                    <option value="book">Book</option>
-                                    <option value="magazine">Magazine</option>
-                                    <option value="tablet">Tablet</option>
-                                    <option value="accessory">Electronic Accessory</option>
-                                </select> 
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Item Name</th>
-                            <td><input name="add_name" type="text" placeholder="Name"> </td>
-                        </tr>
-                        <tr>
-                            <th> Quantity</th>
-                            <td><input name="add_quantity" type="text"></td>
-                        </tr>
-                        <tr class="optional" id="page_length">
-                            <th>Page Length</th>
-                            <td><input name="add_length" type="text"></td>
-                        </tr>
-                        <tr class="optional" id="ISBN">
-                            <th>ISBN/ISSN</th>
-                            <td><input name="add_ISBN" type="text" placeholder="ISBN or ISSN"></td>
-                        </tr>
-                        <tr class="optional" id="OS">
-                            <th>Operating System</th>
-                            <td><input name="add_OS" type="text"></td>
-                        </tr>
-                        <tr class="optional" id="manufacturer">
-                            <th> Manufacturer</th>
-                            <td><input name="add_man" type="text"></td>
-                        </tr>
-                        <tr class="optional" id="accessories">
-                            <th>Additional Accessories</th>
-                            <td><textarea name="add_accessories" rows="2" form="add_form"></textarea></td>
-                        </tr>
-                        <tr>
-                            <th>Condition</th>
-                            <td>    
-                                <select form="add_form" name="add_condition">
+                    <fieldset id="form_list">
+                        <legend>Item to add to the Library</legend>
+                        <label for='add_form'>Item Type</labe>
+                            <select id='add_form' form="add_form" name="add_type" onchange="showOptions()" id="type">
+                                <option></option>
+                                <option value="computer">Computer</option>
+                                <option value="embedded">Embedded System / Microcontroller</option>
+                                <option value="book">Book</option>
+                                <option value="magazine">Magazine</option>
+                                <option value="tablet">Tablet</option>
+                                <option value="accessory">Electronic Accessory</option>
+                            </select> 
+                            <label for="add_name">Item Name</label>
+                            <input id="add_name" name="add_name" type="text" placeholder="Name">
+                            <label for="add_quantity"> Quantity</label>
+                            <input id="add_quantity" name="add_quantity" type="text">
+
+                            <div class="optional" id="page_length">
+                                <label for="add_length">Page Length</label>
+                                <input id="add_length" name="add_length" type="text">
+                            </div>
+                            <div class="optional" id="ISBN">
+                                <label for="add_ISBN">ISBN/ISSN</label>
+                                <input id="add_ISBN" name="add_ISBN" type="text" placeholder="ISBN or ISSN">
+                            </div>
+                            <div class="optional" id="OS">
+                                <label for="add_OS">Operating System</label>
+                                <input id="add_OS" name="add_OS" type="text">
+                            </div>
+                            <div class="optional" id="manufacturer">
+                                <label for="add_man"> Manufacturer</label>
+                                <input id = "add_man" name="add_man" type="text">
+                            </div>
+                            <div class="optional" id="accessories">
+                                <label for="add_accessories">Additional Accessories</label>
+                                <textarea id="add_accessories" name="add_accessories" rows="2" form="add_form"></textarea>
+                            </div>
+                            <div>
+                                <label for="add_condition">Condition</label>
+                                <select id="add_condition" form="add_form" name="add_condition">
                                     <option></option>
                                     <option value="new">New</option>
                                     <option value="very_good">Very Good</option>
@@ -146,16 +123,15 @@ if ($_SESSION['logged_in'] == 0) {
                                     <option value="fair">Fair</option>
                                     <option value="poor">Poor</option>
                                 </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Brief Description</th>
-                            <td><textarea name="add_description" rows="5" form="add_form"></textarea> </td>
-                        </tr>
-                        <tr>
-                            <th colspan="2"><input type="submit" text="Submit"></th>
-                        </tr>
-                    </table>
+                            </div>
+                            <div>
+                                <th>Brief Description</th>
+                                <td><textarea name="add_description" rows="5" form="add_form"></textarea> </td>
+                            </div>
+                            <div>
+                                <input type="submit" text="Submit">
+                            </div>
+                    </fieldset>
                 </form>
                 <div  id="add_confirmation">
                     <?php
@@ -180,9 +156,9 @@ if ($_SESSION['logged_in'] == 0) {
                             $fail = False;
 
                             // Get values from user
-                            $barcode = mysqli_real_escape_string($mysqli, filter_input(INPUT_POST, "add_barcode", FILTER_SANITIZE_STRING));
                             $type = mysqli_real_escape_string($mysqli, filter_input(INPUT_POST, "add_type", FILTER_SANITIZE_STRING));
                             $name = mysqli_real_escape_string($mysqli, filter_input(INPUT_POST, "add_name", FILTER_SANITIZE_STRING));
+                            $barcode = $type . $name . rand();
                             $description = mysqli_real_escape_string($mysqli, filter_input(INPUT_POST, "add_description", FILTER_SANITIZE_STRING));
                             $condition = mysqli_real_escape_string($mysqli, filter_input(INPUT_POST, "add_condition", FILTER_SANITIZE_STRING));
                             $quantity = mysqli_real_escape_string($mysqli, filter_input(INPUT_POST, "add_quantity", FILTER_VALIDATE_INT, array("options" => array("min_range" => 1))));
@@ -209,7 +185,10 @@ if ($_SESSION['logged_in'] == 0) {
                                 echo "Bad type, please try again<br>\n";
                             }
 
-                            echo "Query:  " . $query . "<br>";
+                            $barcodeSite = "http://chart.googleapis.com/chart?chs=200x200&cht=qr&choe=UTF-8&chld=H&chl=";
+                            $barcodeSite = $barcodeSite . $barcode;
+
+                            //echo "Query:  " . $query . "<br>";
                             if (!$fail) {
                                 // Pass the query to add the user
                                 if (!mysqli_query($mysqli, $query)) {
@@ -217,24 +196,24 @@ if ($_SESSION['logged_in'] == 0) {
                                 } else {
                                     // Tell the user of the success
                                     echo "<h4>Item Added!</h4><br>\n";
-                                    echo "<dl>\n";
-                                    echo "<dt>Name</dt> <dd>" . $name . "</dd>\n";
-                                    echo "<dt>Type</dt> <dd>" . $type . "</dd>\n";
-                                    echo "<dt>Name</dt> <dd>" . $condition . "</dd>\n";
-                                    echo "<dt>Type</dt> <dd>" . $type . "</dd>\n";
-
+                                    echo "<table>\n";
+                                    echo "<tr><th>Type</th> <td>" . $type . "</td></tr>\n";
+                                    echo "<tr><th>Name</th> <td>" . $name . "</td></tr>\n";
                                     if (strcmp($type, "book") == 0) {
-                                        echo "<dt>Book length</dt> <dd>" . $length . "</dd>\n";
-                                        echo "<dt>ISBN</dt> <dd>" . $ISBN . "</dd>\n";
+                                        echo "<tr><th>Book length</th> <td>" . $length . "</td></tr>\n";
+                                        echo "<tr><th>ISBN</th> <td>" . $ISBN . "</td></tr>\n";
                                     } else {
-                                        echo "<dt>Accessories</dt> <dd>" . $accessories . "</dd>\n";
+                                        echo "<tr><th>Accessories</th> <td>" . $accessories . "</td></tr>\n";
                                         if (strcmp($type, "computer") == 0 || (strcmp($type, "tablet") == 0)) {
-                                            echo "<dt>Operating System</dt> <dd>" . $OS . "</dd>\n";
-                                            echo "<dt>Manufacturer</dt> <dd>" . $man . "</dd>\n";
+                                            echo "<tr><th>Operating System</th> <td>" . $OS . "</td></tr>\n";
+                                            echo "<tr><th>Manufacturer</th> <td>" . $man . "</td></tr>\n";
                                         }
                                     }
-                                    echo "<dt>Description</dt> <dd>" . $description . "</dd>\n";
-                                    echo "</dl>\n";
+                                    echo "<tr><th>Condition</th> <td>" . $condition . "</td></tr>\n";
+                                    echo "<tr><th>Description</th> <td>" . $description . "</td></tr>\n";
+                                    echo "<tr><th>QR Code</th>\n";
+                                    echo "<td><img src=\"" . $barcodeSite . "\" alt=\"Barcode\"></td></tr>\n";
+                                    echo "</table>\n";
                                 }
                             }
                         }
