@@ -19,7 +19,7 @@ CREATE TABLE SiteUsers (
 )
 CREATE TABLE Item (
 	barcodeID varchar(64) NOT NULL,
-	quantity_index int(11),
+	quantity_index int(11) NOT NULL,
 	name varchar(64),
 	type_of_item varchar(64),
 	num_available int(11),
@@ -31,5 +31,5 @@ CREATE TABLE Item (
 	ISBN_or_ISSN varchar(25),
 	item_condition varchar(64),
 	hardware_man varchar(64),
-	PRIMARY KEY (barcodeID)
+	PRIMARY KEY (barcodeID, quantity_index)
 )
