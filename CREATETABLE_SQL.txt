@@ -14,7 +14,7 @@ CREATE TABLE SiteUsers (
 	username varchar(64),
 	password varchar(64),
 	permissions int(11),
-	item_semaphore int(2),                  //number of items left user can check out haha.
+	item_semaphore int(2),
 	PRIMARY KEY (userID)
 )
 CREATE TABLE Item (
@@ -29,7 +29,7 @@ CREATE TABLE Item (
 	pages_if_book  int(11),
 	OS_if_computer varchar(64),
 	ISBN_or_ISSN varchar(25),
-	condition varchar(64),
+	item_condition varchar(64),
 	hardware_man varchar(64),
 	PRIMARY KEY (barcodeID)
 )
