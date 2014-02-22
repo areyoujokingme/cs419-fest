@@ -1,0 +1,35 @@
+CREATE TABLE Transaction (
+	transactionID int(11) NOT NULL AUTO_INCREMENT,
+	checkIN timestamp,
+	checkOUT timestamp,
+	userID int(11),
+	barcodeID varchar(64),
+	quantity_index int(11),
+	FOREIGN KEY (userID) REFERENCES SiteUser(userID),
+	FOREIGN KEY (barcodeID) REFERENCES Item(barcodeID),
+	PRIMARY KEY(transactionID)
+)
+CREATE TABLE SiteUsers (
+	userID int(11) NOT NULL AUTO_INCREMENT,
+	username varchar(64),
+	password varchar(64),
+	permissions int(11),
+	item_semaphore int(2),                  //number of items left user can check out haha.
+	PRIMARY KEY (userID)
+)
+CREATE TABLE Item (
+	barcodeID varchar(64) NOT NULL,
+	quantity_index int(11),
+	name varchar(64),
+	type_of_item varchar(64),
+	num_available int(11),
+	itemQuantity int(2),
+	description varchar(255),
+	accessories varchar(255),
+	pages_if_book  int(11),
+	OS_if_computer varchar(64),
+	ISBN_or_ISSN varchar(25),
+	condition varchar(64),
+	hardware_man varchar(64),
+	PRIMARY KEY (barcodeID)
+)
