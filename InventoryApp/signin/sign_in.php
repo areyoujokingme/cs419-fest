@@ -29,7 +29,10 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 		// Store post values
 		$username = $_POST['username'];
 		$_SESSION['username'] = $username;
-		if ($_SESSION['username'] == "admin") {
+		if ($_SESSION['username'] == "areyoujokingme@gmail.com" || 
+		$_SESSION['username'] == "teachasda@gmail.com" || 
+		$_SESSION['username'] == "vasekas@gmail.com" || 
+		$_SESSION['username'] == "dmcgrath@eecs.oregonstate.edu") {
 			$_SESSION['permissions'] = 0;
 		} else {
 			$_SESSION['permissions'] = 1;
@@ -93,7 +96,8 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 						//echo "Password found: " . $comparepassword . "<br>";
 						//echo "Posted password was: " . $password . "<br>";
 						$stmt->close();
-						if ($password != $comparepassword) {
+						$compare_hashed_password = crypt($password, CRYPT_SHA256);
+						if ($compare_hashed_password != $comparepassword) {
 							$myerrno = 5;
 							//echo "It says they are not the same.<br>";
 						} else {
@@ -138,7 +142,19 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 			$("#message").hide();
 			$("#message_success").hide();
 			$("#message_success").text("Is this working?");	
-			
+			$("#change_password").validate({
+				rules: {
+					password: {
+						required: true,
+						minlength: 6,
+						maxlength: 8
+					},
+					username: {
+						required: true,
+						email: true
+					}
+				}
+			});
 			//print success and error messages, for feedback and debugging.
 			var mysuccessnumba = <?php echo $mysuccessno; ?>;
 			success(mysuccessnumba);	
@@ -218,15 +234,15 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in']==1)) {
 			</ul>
 			<h3 class="text-muted">Inventory Locator</h3>
 		</div>
-		<form class="form-signin" action = "sign_in.php" method="POST" enctype="multipart/form-data">
+		<form id="sign_in" class="form-signin" action = "sign_in.php" method="POST" enctype="multipart/form-data">
 			<h2 class="form-signin-heading">Sign In</h2>
-			<input name="username" type="text" class="form-control" placeholder="Email address" required autofocus>
+			<input name="username" type="email" class="form-control" placeholder="Email address" required autofocus>
 			<input name="password" type="password" class="form-control" placeholder="Password" required>
 			<label class="checkbox">
 			  <input type="checkbox" value="remember-me"> Remember me
 			</label>
 			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button><br>
-			<a href="sign_in.php">Forgot Password?</a>
+			<a href="change_password.php">Forgot Password?</a>
 		</form>
 		<div id="message" style="margin-left:50px"></div><br>
 		<div id = "message_success" style="margin-left:50px"></div>

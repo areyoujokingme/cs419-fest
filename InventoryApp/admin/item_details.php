@@ -2,8 +2,7 @@
 <?php 
 session_start();
 ini_set('display_errors',1); 
-error_reporting(E_ALL);
-if ($_SESSION['logged_in']==0) {
+if ($_SESSION['logged_in_inventory_app_cs419']==0) {
 	echo '<META HTTP-EQUIV="Refresh" Content="0; URL=../index.php">';    
     exit;
 } else {
@@ -55,13 +54,13 @@ if ($_SESSION['logged_in']==0) {
 				<h2> Item Details</h2>
 				<div id="search_results_div" class="jumbotron">
 					<?php
-						if ($_SESSION['logged_in']==1) {
+						if ($_SESSION['logged_in_inventory_app_cs419']==1) {
 							//first we have to connect to MYSQL
 							ini_set('display_errors', '1');
-							$dbhost = 'oniddb.cws.oregonstate.edu';
-							$dbname = 'ashmorel-db';
-							$dbuser = 'ashmorel-db';
-							$dbpass = 'BL1p3hMvNVjhUDO8';
+							$dbhost = 'mysql.cs.orst.edu';
+							$dbname = 'cs419_group1';
+							$dbuser = 'cs419_group1';
+							$dbpass = 'JvqM38DV4PsH7cyH';
 							$myerrno = -1;
 							$mysuccessno = -1;
 							$mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
@@ -75,9 +74,8 @@ if ($_SESSION['logged_in']==0) {
 								// Store post values
 								$barcodeID = $_GET['barcodeID'];
 								//echo "barcodeID: " . $barcodeID . "<br>";
-								
 								// Prepare select
-								if (!($stmt = $mysqli->prepare("SELECT barcodeID, name, num_available, checkIN, checkOUT, description, accessories, pages, OS FROM Item WHERE barcodeID=$barcodeID"))) {
+								if (!($stmt = $mysqli->prepare("SELECT checkIN, checkOUT FROM Transaction WHERE barcodeID='$barcodeID'"))) {
 									//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 									$myerrno = 1;
 								} else {
@@ -85,34 +83,70 @@ if ($_SESSION['logged_in']==0) {
 								}
 								// Execute select
 								if (!$stmt->execute()) {
-									//echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
+									echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
 									$myerrno = 2;
 								} else {
 									// execute was successful
 									$mysuccessno = 2;
-									$stmt->bind_result($barcodeID, $itemname, $available, $checkIN, $checkOUT, $description, $accessories, $pages, $OS);
+									$stmt->bind_result($checkIN, $checkOUT);
+									//echo "IN: " . $checkIN . " OUT: " . $checkOUT;
+								}
+								$stmt->close();
+								// Prepare select
+								$query = "SELECT barcodeID, name, description, accessories, type_of_item, itemQuantity, num_available, item_condition, ISBN_or_ISSN, pages_if_book, OS_if_computer, hardware_man FROM Item WHERE barcodeID='" . $barcodeID . "' AND quantity_index=1";
+								if (!($stmt = $mysqli->prepare($query))) {
+									//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+									$myerrno = 1;
+								} else {
+									$mysuccessno = 1;
+								}
+								// Execute select
+								if (!$stmt->execute()) {
+									echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
+									$myerrno = 2;
+								} else {
+									// execute was successful
+									$mysuccessno = 2;
+									$stmt->bind_result($barcodeID, $itemname, $description, $accessories, $type, $total, $available, $condition, $isbn, $pages, $OS, $manufacturer);
+									//echo $type;
 									echo "
 										<table>
-											<td>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Barcode ID:<input name='IDfill' type='text' value=$barcodeID readonly /></tr><br>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Item Name:<input name='IDfill' type='text' value=$itemname readonly /></tr><br>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Number Available:<input name='IDfill' type='text' value=$available readonly /></tr><br>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Check In:<input name='IDfill' type='text' value=$checkIN readonly /></tr><br>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Check Out:<input name='IDfill' type='text' value=$checkOUT readonly /></tr><br>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Description:<input name='IDfill' type='text' value=$description readonly /></tr><br>											
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Accessories:<input name='IDfill' type='text' value=$accessories readonly /></tr><br>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'># Pages:<input name='IDfill' type='text' value=$pages readonly /></tr><br>
-												<tr style='font-size: 50%; text-decoration: underline; width: 15%'>Operating System:<input name='IDfill' type='text' value=$OS readonly /></tr><br>
-											</td>									
-										</table>";
+											<tr style='font-size: 75%; text-decoration: underline;'><td>Barcode ID:</td><td><input style='width:400px' value='" . $barcodeID . "'readonly /></td></tr>
+											<tr style='font-size: 75%; text-decoration: underline;'><td>Item Name:</td><td><input style='width:400px' value='" . $itemname . "' readonly /><td></tr>
+											<tr style='font-size: 75%; text-decoration: underline;'><td>Number Available:</td><td><input style='width:400px' value='" . $available . "' readonly /></tr>
+											<tr style='font-size: 75%; text-decoration: underline;'><td>Item Quantity:</td><td><input style='width:400px' value='" . $total . "' readonly /></tr>
+											<tr style='font-size: 75%; text-decoration: underline;'><td>Description:</td><td><input style='width:400px' value='" . $description . "' readonly /></tr>
+											<tr style='font-size: 75%; text-decoration: underline;'><td>Check In:</td><td><input style='width:400px' value='" . $checkIN . "' readonly /></tr>
+											<tr style='font-size: 75%; text-decoration: underline;'><td>Check Out:</td><td><input style='width:400px' value='" . $checkOUT . "' readonly /></tr>";
+											if ($type == 'computer' || $type == 'tablet') {
+												echo "<tr style='font-size: 75%; text-decoration: underline;'><td>Operating System:</td><td><input style='width:400px' type='text' value='" . $OS . "' readonly /></tr>
+												<tr style='font-size: 75%; text-decoration: underline;'><td>Hardware Manufacturer:</td><td><input style='width:400px'  value='" . $manufacturer . "' readonly /></tr>";													
+											}
+											if ($type == 'book' || $type == 'magazine') {
+												echo "<tr style='font-size: 75%; text-decoration: underline;'><td>No. Pages:</td><td><input style='width:400px'  value='" . $pages . "' readonly /></tr>												
+												<tr style='font-size: 75%; text-decoration: underline;'><td>ISBN/ISSN:</td><td><input style='width:400px' value='" . $isbn . "' readonly /></tr>";
+											}
+											echo "<tr style='font-size: 75%; text-decoration: underline;'><td>Item Condition:</td><td><input style='width:400px' value='" . $condition . "' readonly /></tr>";
+											if ($accessories != null) {
+												echo "<tr style='font-size: 75%; text-decoration: underline;'><td>Accessories:</td><td><input style='width:400px' value='" . $accessories . "' readonly /></tr>";												
+											}
+											echo "</table>";
 									$stmt->close();
 								}
 							}
 						}
 					?>
-					<br><br><br>
 				</div>
 			</div>
+			<?php echo "barcodeID: " . $barcodeID . 
+				"<br>name: " . $itemname . 
+				"<br>available (out of): " . $available . 
+				"(" . $total . 
+				") <br>description: " . $description . 
+				"<br>checkIN/OUT: " . $checkIN .
+				"/" . $checkOUT . 
+				"<br>condition: " . $condition . "";
+			?>
 			<div id="message" style="margin-left:50px"></div><br>
 			<div id = "message_success" style="margin-left:50px"></div>
 			<div class="row marketing">

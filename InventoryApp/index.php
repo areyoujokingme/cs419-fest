@@ -2,13 +2,13 @@
 session_start();
 
 if (isset($_SESSION['username']) && $_SESSION['permissions']==0) {
-	$_SESSION['logged_in'] = 1;
+	$_SESSION['logged_in_inventory_app_cs419'] = 1;
 	header('Location: http://web.engr.oregonstate.edu/~ashmorel/419/InventoryApp/admin/admin.php');
 } else if (isset($_SESSION['username']) && $_SESSION['permissions']==1) {
-	$_SESSION['logged_in'] = 1;
+	$_SESSION['logged_in_inventory_app_cs419'] = 1;
 	header('Location: http://web.engr.oregonstate.edu/~ashmorel/419/InventoryApp/user/user.php');
 } else {
-	$_SESSION['logged_in'] = 0;
+	$_SESSION['logged_in_inventory_app_cs419'] = 0;
 	unset($_SESSION['username']);
 	unset($_SESSION['password']);
 	unset($_SESSION['create_username']);

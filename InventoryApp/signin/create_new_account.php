@@ -64,7 +64,8 @@ session_start();
 						$mysuccessno = 1;
 						//echo "Prepared username select successfully.<br>";
 						//Bind parameters
-						if (!$stmt->bind_param("ss", $name, $password)) {
+						$hashed_password = crypt($password, CRYPT_SHA256);
+						if (!$stmt->bind_param("ss", $name, $hashed_password)) {
 							//echo "Bind failed: " . $stmt->errno . " " . $stmt->error;
 							$myerrno = 4;
 						} else {
@@ -110,7 +111,23 @@ session_start();
 		$(document).ready(function() {
 			$("#message").hide();
 			$("#message_success").hide();
-			
+			$("#create_account").validate({
+				rules: {
+					create_username: {
+						required: true,
+						email: true
+					},
+					create_password: {
+						required: true,
+						minlength: 6,
+						maxlength: 8
+					},
+					password_verify: {
+						required: true,
+						equalTo: "#create_password"
+					}
+				}
+			});
 			//print success and error messages, for feedback and debugging.
 			var mysuccessnumba = <?php echo $mysuccessno; ?>;
 			success(mysuccessnumba);	
@@ -193,11 +210,11 @@ session_start();
 			</ul>
 			<h3 class="text-muted">Inventory Locator</h3>
 		</div>			
-		<form class="form-signin" action="create_new_account.php" method = "POST" enctype="multipart/form-data">
+		<form id="create_account" class="form-signin" action="create_new_account.php" method = "POST" enctype="multipart/form-data">
 			<h2 class="form-signin-heading">Create Account</h2>
-			<input name="create_username" type="text" class="form-control" placeholder="Email address" required autofocus>
-			<input name="create_password" type="password" class="form-control" placeholder="Password" required>
-			<input name="password_verify" type="password" class="form-control" placeholder="Re-enter Password" required>
+			<input  id="create_username" name="create_username" type="email" class="form-control" placeholder="Email address" required autofocus>
+			<input id="create_password" name="create_password" type="password" class="form-control" placeholder="Password" required>
+			<input  id="password_verify" name="password_verify" type="password" class="form-control" placeholder="Re-enter Password" required>
 			<label class="checkbox">
 			  <input type="checkbox" value="remember-me"> Remember me
 			</label>

@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<?php
+<?php 
 session_start();
+ini_set('display_errors',1); 
+if ($_SESSION['logged_in_inventory_app_cs419']==0) {
+	echo '<META HTTP-EQUIV="Refresh" Content="0; URL=index.php">';    
+    exit;
+} else {
 	//first we have to connect to MYSQL
 	ini_set('display_errors', '1');
-	$dbhost = 'oniddb.cws.oregonstate.edu';
-	$dbname = 'ashmorel-db';
-	$dbuser = 'ashmorel-db';
-	$dbpass = 'BL1p3hMvNVjhUDO8';
+	$dbhost = 'mysql.cs.orst.edu';
+	$dbname = 'cs419_group1';
+	$dbuser = 'cs419_group1';
+	$dbpass = 'JvqM38DV4PsH7cyH';
 	$myerrno = -1;
 	$mysuccessno = -1;
 	$mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
@@ -16,25 +21,43 @@ session_start();
 		//echo "Connected to database successfully.<br>";
 	}
 	$username = $_SESSION['username'];
-	
+	if ((!empty($_POST["send_email"]))) {
+		$emailed_code = substr(str_shuffle(str_repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",7)),7,7);
+		$subject = "Change Password Request: Your verification code.";
+		$body = "<html>
+				<head>
+				  <title>Test Mail</title>
+				</head>
+				<body>Your verification code is " . $emailed_code . 
+				". Please enter this code in the appropriate field 
+				<a href='http://web.engr.oregonstate.edu/~ashmorel/419/InventoryApp/change_password.php'>here</a>.
+				</body>
+				</html>";
+		$headers  = 'MIME-Version: 1.0' . "\r\n";
+		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+		$headers .= 'From: Noreply <noreply@example.com>' . "\r\n";
+		if (!mail($username, $subject, $body, $headers)) {
+			echo "Email failed to send.";
+		}
+	}
 	// Check if user entered name and password
-	if ((!empty($_POST["current_username"])) && (!empty($_POST["old_password"])) && (!empty($_POST["new_password"]))) {	
+	if ((!empty($_POST["current_username"])) && (!empty($_POST["verification_code"])) && (!empty($_POST["new_password"]))) {	
 		// Store post values
 		$name = $_POST['current_username'];
-		$old_password = $_POST['old_password'];
+		$verification_code = $_POST['verification_code'];
 		$password = $_POST['new_password'];
 		$password2 = $_POST['password_verify'];
-		echo "" . $name;
-		echo "" . $old_password;
-		echo "" . $password;
-		echo "" . $password2;
+		//echo "" . $name;
+		//echo "" . $verification_code;
+		//echo "" . $password;
+		//echo "" . $password2;
 		
 		if ($password != $password2) {
 			$myerrno = 5;
 			//echo "It says the passwords are NOT identical.<br>";
 		} else {
 			$mysuccessno = 5;
-			echo "Passwords match.<br>";
+			//echo "Passwords match.<br>";
 			//check to see if username already exists
 			// Prepare select
 			if (!($stmt = $mysqli->prepare("SELECT username FROM SiteUsers WHERE username='$name'"))) {
@@ -50,7 +73,7 @@ session_start();
 				$myerrno = 2;
 			} else {
 				// execute was successful
-				echo "Executed username select successfully.<br>";
+				//echo "Executed username select successfully.<br>";
 				$mysuccessno = 2;
 				$stmt->store_result();
 				$rowcount = $stmt->num_rows;
@@ -83,6 +106,7 @@ session_start();
 		}
 	}
 	//echo '<pre>' . htmlspecialchars(print_r(get_defined_vars(), true));
+}
 ?>
 <html lang="en">
   <head>
@@ -101,106 +125,63 @@ session_start();
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#message").hide();
-			$("#message_success").hide();
-			
+			$("#change_password").hide();
+			$("#message_success").text("In order to change your password, please enter the verification number which been emailed to you at <?php echo $username ?> along with your new password in the fields above.");
+			document.getElementById("verification_code").onclick = function() {
+				$("#change_password").show();
+				$("#change_password").validate({
+					rules: {
+						verification_code: {
+							required: true,
+							minlength: 7,
+							maxlength: 7
+						},
+						new_password: {
+							required: true,
+							minlength: 6,
+							maxlength: 8
+						},
+						password_verify: {
+							required: true,
+							equalTo: "#new_password"
+						}
+					}
+				});
+			}
 			//print success and error messages, for feedback and debugging.
 			var mysuccessnumba = <?php echo $mysuccessno; ?>;
 			success(mysuccessnumba);	
 			var myerrnumba =  <?php echo $myerrno; ?>;
 			error(myerrnumba);
 		});
-		
-		function success(mysuccessnumba) {
-			switch (mysuccessnumba) {
-				case 0:
-					$("#message_success").text("Connected to the database successfully.");
-					$("#message_success").show();
-					break;
-				case 1: 
-					$("#message_success").text("Prepared statement successfully.");
-					$("#message_success").show();
-					break;
-				case 2:
-					$("#message_success").text("Executed statement successfully.");
-					$("#message_success").show();
-					break;
-				case 3:
-					$("#message_success").text("Username found.");
-					$("#message_success").show();
-					break;
-				case 4:
-					$("#message_success").text("Bind successful.");
-					$("#message_success").show();
-					break;
-				case 5:
-					$("#message_success").text("Passwords match.");
-					$("#message_success").show();
-					break;
-				case 6:
-					$("#message_success").text("You password has been updated.");
-					$("#message_success").show();
-					break;
-				default: 
-					$("#message_success").hide();
-			}
-		}
-		function error(myerrno) {
-			switch (myerrno) {
-				case 0:
-					$("#message").text("Failed to connect to database.");
-					$("#message").show();
-					break;
-				case 1:
-					$("#message").text("Prepare statement failed.");
-					$("#message").show();
-					break;
-				case 2:
-					$("#message").text("Execute statement failed.");
-					$("#message").show();
-					break;
-				case 3:
-					$("#message").html("Username already exists. Please <a href='create_account.php'>try again</a> with a different username.");
-					$("#message").show();
-					break;
-				case 4:
-					$("#message").text("Bind failed.");
-					$("#message").show();
-					break;
-				case 5:
-					$("#message").html("Passwords do not match. Please <a href='create_account.php'>try again.</a>");
-					$("#message").show();
-					break;
-				case 6:
-					$("#message").html("Username does not exist. Please <a href='create_account.php'>create an account</a> or try again.");
-					$("#message").show();
-					break;
-				default: 
-					$("#message").hide();
-			}
-		}
-	</script>
-  </head>
-  <body data-spy="scroll" data-target=".dropdown">
+</script>
+</head>
+<body data-spy="scroll" data-target=".dropdown">
 	<div id="float_right" class="dropdown">
 		<a href="#" data-toggle="dropdown" onclick="showDropdown()">Hello, <?php echo $username ?><span class="caret"></span></a>
 		<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 			<li class="divider"></li>
-			<li><a href="../logout.php">Logout</a></li>
+			<li><a href="logout.php">Logout</a></li>
 		</ul>
 	</div>
-    <div class="container">
+	<br><br>
+	<div class="container">
 		<div class="header">
 			<ul class="nav nav-pills pull-right">
 				<li><a href="index.php">Item Lookup</a></li>
 			</ul>
 			<h3 class="text-muted">Inventory Locator</h3>
 		</div>
-		<form class="form-signin" action="change_password.php" method = "POST" enctype="multipart/form-data">
+		<form id="send" class="form-signin" action="change_password.php" method = "POST">
+			<input id="send_email" name="send_email" type="hidden" value="yes"></input>
+			<button class="btn btn-lg btn-primary btn-block" type="submit" id="verification_code">Get Email Verification Code</button>
+		</form>
+		<form id="change_password" class="form-signin" action="change_password.php" method = "POST" enctype="multipart/form-data">
 			<h2 class="form-signin-heading">Change Password</h2>
-			<input name="current_username" type="text" class="form-control" placeholder="Username" required autofocus>
-			<input name="old_password" type="password" class="form-control" placeholder="Old Password" required>
-			<input name="new_password" type="password" class="form-control" placeholder="New Password" required>
-			<input name="password_verify" type="password" class="form-control" placeholder="Re-enter New Password" required>
+			<input id="current_username" name="current_username" type="text" class="form-control" placeholder="Email Address" value="<?php echo $username?>" readonly >
+			<input id="verification_code" name="verification_code" class="form-control" placeholder="Verification Code" required autofocus>
+			<input id="new_password" name="new_password" type="password" class="form-control" placeholder="New Password" required>
+			<input id="password_verify" name="password_verify" type="password" class="form-control" placeholder="Re-enter New Password" required>
 			<label class="checkbox">
 			  <input type="checkbox" value="remember-me"> Remember me
 			</label>
@@ -208,6 +189,76 @@ session_start();
 		</form>
 		<div id="message" style="margin-left:50px"></div><br>
 		<div id = "message_success" style="margin-left:50px"></div>
-    </div>
-  </body>
+	</div>
+</body>
+<script type="text/javascript">	
+	function success(mysuccessnumba) {
+		switch (mysuccessnumba) {
+			case 0:
+				$("#message_success").text("Connected to the database successfully.");
+				$("#message_success").show();
+				break;
+			case 1: 
+				$("#message_success").text("Prepared statement successfully.");
+				$("#message_success").show();
+				break;
+			case 2:
+				$("#message_success").text("Executed statement successfully.");
+				$("#message_success").show();
+				break;
+			case 3:
+				$("#message_success").text("Username found.");
+				$("#message_success").show();
+				break;
+			case 4:
+				$("#message_success").text("Bind successful.");
+				$("#message_success").show();
+				break;
+			case 5:
+				$("#message_success").text("Passwords match.");
+				$("#message_success").show();
+				break;
+			case 6:
+				$("#message_success").text("You password has been updated.");
+				$("#message_success").show();
+				break;
+			default: 
+				$("#message_success").hide();
+		}
+	}
+	function error(myerrno) {
+		switch (myerrno) {
+			case 0:
+				$("#message").text("Failed to connect to database.");
+				$("#message").show();
+				break;
+			case 1:
+				$("#message").text("Prepare statement failed.");
+				$("#message").show();
+				break;
+			case 2:
+				$("#message").text("Execute statement failed.");
+				$("#message").show();
+				break;
+			case 3:
+				$("#message").html("Username already exists. Please <a href='create_account.php'>try again</a> with a different username.");
+				$("#message").show();
+				break;
+			case 4:
+				$("#message").text("Bind failed.");
+				$("#message").show();
+				break;
+			case 5:
+				$("#message").html("Passwords do not match. Please <a href='create_account.php'>try again.</a>");
+				$("#message").show();
+				break;
+			case 6:
+				$("#message").html("Username does not exist. Please <a href='create_account.php'>create an account</a> or try again.");
+				$("#message").show();
+				break;
+			default: 
+				$("#message").hide();
+		}
+	}
+</script>
 </html>

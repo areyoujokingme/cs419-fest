@@ -2,8 +2,7 @@
 <?php 
 session_start();
 ini_set('display_errors',1); 
-error_reporting(E_ALL);
-if ($_SESSION['logged_in']==0) {
+if ($_SESSION['logged_in_inventory_app_cs419']==0) {
 	echo '<META HTTP-EQUIV="Refresh" Content="0; URL=../index.php">';    
     exit;
 } else {
@@ -54,59 +53,72 @@ if ($_SESSION['logged_in']==0) {
 					<button id="search_button" class="btn btn-success" type="submit"><img src="search_bar.jpg"></button>
 				</form>
 				<div id="search_results_div" class="jumbotron">
-					<?php
-						if ($_SESSION['logged_in']==1) {
-							//first we have to connect to MYSQL
-							ini_set('display_errors', '1');
-							$dbhost = 'oniddb.cws.oregonstate.edu';
-							$dbname = 'ashmorel-db';
-							$dbuser = 'ashmorel-db';
-							$dbpass = 'BL1p3hMvNVjhUDO8';
-							$myerrno = -1;
-							$mysuccessno = -1;
-							$mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
-							if ($mysqli->connect_errno) {
-								$myerrno = 0;
-							} else {
-								//echo "Connected to database successfully.<br>";
-							}
+				<?php
+					if ($_SESSION['logged_in_inventory_app_cs419']==1) {
+						//first we have to connect to MYSQL
+						ini_set('display_errors', '1');
+						$dbhost = 'mysql.cs.orst.edu';
+						$dbname = 'cs419_group1';
+						$dbuser = 'cs419_group1';
+						$dbpass = 'JvqM38DV4PsH7cyH';
+						$myerrno = -1;
+						$mysuccessno = -1;
+						$mysqli = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
+						if ($mysqli->connect_errno) {
+							$myerrno = 0;
+						} else {
+							//echo "Connected to database successfully.<br>";
+						}
 
-							if ((!empty($_POST["search_query"]))) {	
-								// Store post values
-								$search_query = $_POST['search_query'];
-								//echo "" . $search_query;
+						if ((!empty($_POST["search_query"]))) {	
+							// Store post values
+							$search_query = $_POST['search_query'];
+							//echo "" . $search_query;
+							
+							// Prepare select
+							if (!($stmt = $mysqli->prepare("SELECT barcodeID, name FROM Item WHERE name LIKE '%$search_query%'"))) {
+								//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+								$myerrno = 1;
+							} else {
+								$mysuccessno = 1;
+							}
+							// Execute select
+							if (!$stmt->execute()) {
+								//echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
+								$myerrno = 2;
+							} else {
+								// execute was successful
+								$mysuccessno = 2;
+								$stmt->bind_result($barcodeID, $itemname);
+								$stmt->store_result();
+								$rowcount = $stmt->num_rows;
+								$i = 1;
 								
-								// Prepare select
-								if (!($stmt = $mysqli->prepare("SELECT barcodeID, name FROM Item WHERE name LIKE '%$search_query%'"))) {
-									//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
-									$myerrno = 1;
-								} else {
-									$mysuccessno = 1;
-								}
-								// Execute select
-								if (!$stmt->execute()) {
-									//echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
-									$myerrno = 2;
-								} else {
-									// execute was successful
-									$mysuccessno = 2;
-									$stmt->bind_result($barcodeID, $itemname);
-									echo "<form id='item_detail_forward' action='item_details.php' method='GET'>
-									<table>
-										<tr>
-											<td style='text-decoration: underline; width: 50%'>barcodeID</td>
-											<td style='text-decoration: underline; width: 50%'>name</td>
+								echo "<form id='item_detail_forward' action='item_details.php' method='GET'>
+								<table>
+									<tr>
+										<td style='text-decoration: underline; width: 50%'>barcodeID</td>
+										<td style='text-decoration: underline; width: 50%'>name</td>
+									</tr>\n";
+								while ($stmt->fetch()) {
+									echo "<tr style='font-size: 75%'>
+											<td><a>" . $i . "</a></td>
+											<td>" . $itemname . "</td>
+											<td><input style='width: 40px' name='quantity_requested' value=''></td>
+											<td><button name='barcodeID' value='" . $barcodeID . "' type='submit'><a>Request</a></button></td>
 										</tr>\n";
-									while ($stmt->fetch()) {
-										echo "<tr><td><button class='barcodeButton' name='barcodeID' value=$barcodeID type='submit'><a>" . $barcodeID . "</a></button></td><td>" . $itemname . "</td></tr>\n";
-									}
-									echo "</table></form>";
-									$stmt->close();
+									$i++;
 								}
+								echo "</table></form>";
+								if ($rowcount==0) {
+									echo "<p class='text-muted'>There are no items in the inventory which contain your query " . $search_query . ". Please try another query.</p>";
+								}
+								$stmt->close();
 							}
 						}
-					?>
-					<br><br><br><br><br><br><br>
+					}
+				?>
+				<br><br><br><br><br><br><br>
 				</div>
 			</div>
 			<div id="message" style="margin-left:50px"></div><br>

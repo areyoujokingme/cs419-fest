@@ -19,7 +19,7 @@ CREATE TABLE SiteUsers (
 )
 CREATE TABLE Item (
 	barcodeID varchar(64) NOT NULL,
-	quantity_index int(11) NOT NULL,
+	quantity_index int(11),
 	name varchar(64),
 	type_of_item varchar(64),
 	num_available int(11),
@@ -31,5 +31,14 @@ CREATE TABLE Item (
 	ISBN_or_ISSN varchar(25),
 	item_condition varchar(64),
 	hardware_man varchar(64),
-	PRIMARY KEY (barcodeID, quantity_index)
+	PRIMARY KEY (barcodeID)
+)
+
+CREATE TABLE PendingRequests(
+	userID int(11) NOT NULL,
+	username varchar(64),			//this field may be unnecessary
+	itemname varchar(64) NOT NULL,
+	quantity_requested int(2)varchar(64) NOT NULL,
+	PRIMARY KEY (userID, itemname),
+	FOREIGN KEY (userID) REFERENCES SiteUsers(userID)
 )
