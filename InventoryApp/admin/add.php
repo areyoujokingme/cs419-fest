@@ -2,16 +2,11 @@
 <?php
 session_start();
 ini_set('display_errors', 1);
-if (false) {
-    if ($_SESSION['logged_in_inventory_app_cs419'] == 0) {
-        echo '<META HTTP-EQUIV="Refresh" Content="0; URL=../index.php">';
-        exit;
-    } else {
-        $username = $_SESSION['username'];
-    }
+if ($_SESSION['logged_in_inventory_app_cs419'] == 0) {
+	echo '<META HTTP-EQUIV="Refresh" Content="0; URL=../index.php">';
+    exit;
 } else {
-    $username = "Arthur";
-    $_SESSION['logged_in_inventory_app_cs419'] = 1;
+        $username = $_SESSION['username'];
 }
 ?>
 
