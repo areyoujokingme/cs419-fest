@@ -41,7 +41,7 @@ if (isset($_SESSION['username']) && ($_SESSION['logged_in_inventory_app_cs419'] 
         } else {
             $_SESSION['permissions'] = 1;
         }
-        $password = filter_input(INPUT_POST,'password', FILTER_SANITIZE_MAGIC_QUOTES);
+        $password = filter_input(INPUT_POST,'password', FILTER_SANITIZE_SPECIAL_CHARS);
         $comparename = NULL;
         $comparepassword = NULL;
         //$username = $_SESSION['username'];
