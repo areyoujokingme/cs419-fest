@@ -19,8 +19,8 @@ if ($mysqli->connect_errno) {
 if ((!empty($_POST["create_username"])) && (!empty($_POST["create_password"]))) {
     // Store post values
     $name = filter_input(INPUT_POST,'create_username', FILTER_SANITIZE_EMAIL);
-    $password = filter_input(INPUT_POST,'create_password',FILTER_SANITIZE_MAGIC_QUOTES);
-    $password2 = filter_input(INPUT_POST,'password_verify', FILTER_SANITIZE_MAGIC_QUOTES);
+    $password = filter_input(INPUT_POST,'create_password',FILTER_SANITIZE_SPECIAL_CHARS);
+    $password2 = filter_input(INPUT_POST,'password_verify', FILTER_SANITIZE_SPECIAL_CHARS);
 
     if ($password != $password2) {
         $myerrno = 5;
