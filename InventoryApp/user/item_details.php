@@ -43,7 +43,7 @@ if($flag){
 			<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
 				<li class="divider"></li>
 				<li><a href="../logout.php">Logout</a></li>
-				<li><a href="change_password.php">Change Password</a></li>
+				<li><a href="../change_password.php">Change Password</a></li>
 			</ul>
 		</div>
 		<br><br>
@@ -63,6 +63,7 @@ if($flag){
 						if ($_SESSION['logged_in_inventory_app_cs419']==1) {
 							//first we have to connect to MYSQL
 							ini_set('display_errors', '1');
+							error_reporting(E_ALL);
 							$dbhost = 'mysql.cs.orst.edu';
 							$dbname = 'cs419_group1';
 							$dbuser = 'cs419_group1';
@@ -74,11 +75,6 @@ if($flag){
 								$myerrno = 0;
 							} else {
 								//echo "Connected to database successfully.<br>";
-							}
-							if (!empty($_GET["quantity_requested"])) {
-								$quantity_requested = $_GET["quantity_requested"]);
-							} else {
-								$quantity_requested = 1;
 							}
 							
 							if ((!empty($_GET["barcodeID"]))) {	
@@ -100,11 +96,13 @@ if($flag){
 									// execute was successful
 									$mysuccessno = 2;
 									$stmt->bind_result($checkIN, $checkOUT);
+									$stmt->store_result();
+									$stmt->fetch();
 									//echo "IN: " . $checkIN . " OUT: " . $checkOUT;
 								}
 								$stmt->close();
 								// Prepare select
-								$query = "SELECT barcodeID, name, description, accessories, type_of_item, itemQuantity, num_available, item_condition, ISBN_or_ISSN, pages_if_book, OS_if_computer, hardware_man FROM Item WHERE barcodeID='" . $barcodeID . "' AND quantity_index=1";
+								$query = "SELECT barcodeID, name, description, accessories, type_of_item, itemQuantity, num_available, item_condition, ISBN_or_ISSN, pages_if_book, OS_if_computer, hardware_man FROM Item WHERE barcodeID='" . $barcodeID . "' AND quantity_index=0";
 								if (!($stmt = $mysqli->prepare($query))) {
 									//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 									$myerrno = 1;
@@ -118,7 +116,13 @@ if($flag){
 								} else {
 									// execute was successful
 									$mysuccessno = 2;
-									$stmt->bind_result($barcodeID, $itemname, $description, $accessories, $type, $total, $available, $condition, $isbn, $pages, $OS, $manufacturer);
+									if (!$stmt->bind_result($barcodeID, $itemname, $description, $accessories, $type, $total, $available, $condition, $isbn, $pages, $OS, $manufacturer)) {
+										echo "Something went wrong with the bind.";
+									} else {
+										$mysuccessno = 4;
+									}
+									$stmt->store_result();
+									$stmt->fetch();
 									//echo $type;
 									echo "
 										<table>
@@ -142,23 +146,6 @@ if($flag){
 												echo "<tr style='font-size: 75%; text-decoration: underline;'><td>Accessories:</td><td><input style='width:400px' value='" . $accessories . "' readonly /></tr>";												
 											}
 											echo "</table>";
-									$stmt->close();
-									// Prepare insert into PENDING REQUESTS table
-									$query_pending = "INSERT INTO PendingRequests(userID, itemname, quantity_requested VALUES($username, $itemname, $quantity_requested)";
-									if (!($stmt = $mysqli->prepare($query_pending))) {
-										//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
-										$myerrno = 1;
-									} else {
-										$mysuccessno = 1;
-									}
-									// Execute insert into pending requests
-									if (!$stmt->execute()) {
-										echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
-										$myerrno = 2;
-									} else {
-										// execute was successful
-										$mysuccessno = 2;
-									}
 									$stmt->close();
 								}
 							}

@@ -56,7 +56,7 @@ if($flag){
 			</div>
 
 			<div class="jumbotron">
-				<form class="navbar-form" action="user.php" method="POST" enctype="multipart/form-data">
+				<form class="navbar-form" action="user.php" method="GET" enctype="multipart/form-data">
 					<input id="search_bar" name="search_query" type="text" placeholder="Search">
 					<button id="search_button" class="btn btn-success" type="submit"><img src="search_bar.jpg"></button>
 				</form>
@@ -76,13 +76,12 @@ if($flag){
 							$myerrno = 0;
 						} else {
 							//echo "Connected to database successfully.<br>";
-						}
+						}		
 
-						if ((!empty($_POST["search_query"]))) {	
+						if ((!empty($_GET["search_query"]))) {	
 							// Store post values
-							$search_query = $_POST['search_query'];
+							$search_query = $_GET['search_query'];
 							//echo "" . $search_query;
-							
 							// Prepare select
 							if (!($stmt = $mysqli->prepare("SELECT barcodeID, name FROM Item WHERE name LIKE '%$search_query%'"))) {
 								//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
@@ -102,28 +101,69 @@ if($flag){
 								$rowcount = $stmt->num_rows;
 								$i = 1;
 								
-								echo "<form id='item_detail_forward' action='item_details.php' method='GET'>
-								<table>
+								echo "<table>
 									<tr>
 										<td style='text-decoration: underline; width: 50%'>barcodeID</td>
 										<td style='text-decoration: underline; width: 50%'>name</td>
 									</tr>\n";
 								while ($stmt->fetch()) {
 									echo "<tr style='font-size: 75%'>
-											<td><a>" . $i . "</a></td>
-											<td>" . $itemname . "</td>
-											<td><input style='width: 40px' name='quantity_requested' value=''></td>
-											<td><button name='barcodeID' value='" . $barcodeID . "' type='submit'><a>Request</a></button></td>
+											<td>" . $i . "</td>
+											<td>
+												<form id='item_detail_forward' action='item_details.php' method='GET'>
+													<input type='hidden' name='barcodeID' value='" . $barcodeID . "'/>
+													<a>" . $itemname . "</a>
+												</form>
+											</td>
+											<td><form id='request' action='user.php' method='GET'>
+													<input name='search_query' value='" . $search_query . "' type='hidden' />
+													<input name='itemname' value='" . $itemname . "' type='hidden'/>
+													<td><input style='width: 40px' name='quantity_requested'></td>
+													<td><button name='barcodeID' value='" . $barcodeID . "' type='submit'><a>Request</a></button></td>
+												</form>
+											</td>
 										</tr>\n";
 									$i++;
 								}
-								echo "</table></form>";
+								echo "</table>";
+								echo "<script>
+										document.getElementById('item_detail_forward').onclick = function() {
+											document.getElementById('item_detail_forward').submit();
+										}
+									</script>";
 								if ($rowcount==0) {
 									echo "<p class='text-muted'>There are no items in the inventory which contain your query " . $search_query . ". Please try another query.</p>";
 								}
-								$stmt->close();
+								$stmt->close();						
 							}
 						}
+						if (!empty($_GET["itemname"]) && !empty($_GET["barcodeID"])) {
+							if (!empty($_GET["quantity_requested"])) {
+								$quantity_requested = $_GET['quantity_requested'];
+							} else {
+								$quantity_requested = 1;
+							}
+							$item_requested = $_GET["itemname"];
+							$item_id = $_GET["barcodeID"];
+							// Prepare insert into PENDING REQUESTS table
+							$query_pending = "INSERT INTO PendingRequests(username, barcodeID, itemname, quantity_requested) VALUES('" . $username . "', '" . $item_id . "', '" . $item_requested . "', '" . $quantity_requested . "')";
+							//echo $query_pending;
+							if (!($stmt = $mysqli->prepare($query_pending))) {
+								//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+								$myerrno = 1;
+							} else {
+								$mysuccessno = 1;
+							}
+							// Execute insert into pending requests
+							if (!$stmt->execute()) {
+								//echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
+								$myerrno = 2;
+							} else {
+								// execute was successful
+								$mysuccessno = 2;
+							}
+							$stmt->close();
+						} 	
 					}
 				?>
 				<br><br><br><br><br><br><br>
@@ -158,6 +198,7 @@ if($flag){
 			success(mysuccessnumba);	
 			var myerrnumba =  <?php echo $myerrno; ?>;
 			error(myerrnumba);
+			console.log(mysuccessnumba + myerrnumba);
 		});
 		function success(mysuccessnumba) {
 			switch (mysuccessnumba) {
@@ -204,7 +245,7 @@ if($flag){
 					$("#message").show();
 					break;
 				case 2:
-					$("#message").text("Execute statement failed.");
+					$("#message").text("You cannot request this item, as you have already requested it.");
 					$("#message").show();
 					break;
 				case 3:

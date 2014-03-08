@@ -124,11 +124,10 @@ if ($_SESSION['logged_in_inventory_app_cs419']==0) {
 	<script src="../dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#message").hide();
-			$("#change_password").hide();
-			$("#message_success").text("In order to change your password, please enter the verification number which been emailed to you at <?php echo $username ?> along with your new password in the fields above.");
+			$("#hideForm").hide();
+			$("#instructions").text("In order to change your password, please enter the verification number which been emailed to you at <?php echo $username ?> along with your new password in the fields above.");
 			document.getElementById("verification_code").onclick = function() {
-				$("#change_password").show();
+				$("#hideForm").show();
 				$("#change_password").validate({
 					rules: {
 						verification_code: {
@@ -172,23 +171,23 @@ if ($_SESSION['logged_in_inventory_app_cs419']==0) {
 			</ul>
 			<h3 class="text-muted">Inventory Locator</h3>
 		</div>
-		<form id="send" class="form-signin" action="change_password.php" method = "POST">
-			<input id="send_email" name="send_email" type="hidden" value="yes"></input>
-			<button class="btn btn-lg btn-primary btn-block" type="submit" id="verification_code">Get Email Verification Code</button>
-		</form>
 		<form id="change_password" class="form-signin" action="change_password.php" method = "POST" enctype="multipart/form-data">
-			<h2 class="form-signin-heading">Change Password</h2>
-			<input id="current_username" name="current_username" type="text" class="form-control" placeholder="Email Address" value="<?php echo $username?>" readonly >
-			<input id="verification_code" name="verification_code" class="form-control" placeholder="Verification Code" required autofocus>
-			<input id="new_password" name="new_password" type="password" class="form-control" placeholder="New Password" required>
-			<input id="password_verify" name="password_verify" type="password" class="form-control" placeholder="Re-enter New Password" required>
-			<label class="checkbox">
-			  <input type="checkbox" value="remember-me"> Remember me
-			</label>
-			<button class="btn btn-lg btn-primary btn-block" type="submit">Change Password</button>
+			<button class="btn btn-lg btn-primary btn-block" type="submit" id="verification_code" name="send_email" value="yes">Get Email Verification Code</button>
+			<div id="hideForm">
+				<h2 class="form-signin-heading">Change Password</h2>
+				<input id="current_username" name="current_username" type="text" class="form-control" placeholder="Email Address" value="<?php echo $username?>" readonly >
+				<input id="verification_code" name="verification_code" class="form-control" placeholder="Verification Code" required autofocus>
+				<input id="new_password" name="new_password" type="password" class="form-control" placeholder="New Password" required>
+				<input id="password_verify" name="password_verify" type="password" class="form-control" placeholder="Re-enter New Password" required>
+				<label class="checkbox">
+				  <input type="checkbox" value="remember-me"> Remember me
+				</label>
+				<button class="btn btn-lg btn-primary btn-block" type="submit">Change Password</button>
+			</div>
 		</form>
+		<div id="instructions" style="margin-left:50px"></div><br>
 		<div id="message" style="margin-left:50px"></div><br>
-		<div id = "message_success" style="margin-left:50px"></div>
+		<div id="message_success" style="margin-left:50px"></div>
 	</div>
 </body>
 <script type="text/javascript">	
