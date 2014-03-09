@@ -29,10 +29,12 @@ if (isset($_SESSION["spacer"])) {
     $_SESSION["spacer"] = $spacer;
 }
 
-for ($i = strlen($unparsedBarcode); (($i > 0) && !isset($barcode)); $i--) {
-    if ($unparsedBarcode[$i] == $spacer) {
-        $barcode = substr($unparsedBarcode, 0, $i);
-        $index = substr($unparsedBarcode, $i + 1) + 0;
+if (isset($unparsedBarcode)) {
+    for ($i = strlen($unparsedBarcode); (($i > 0) && !isset($barcode)); $i--) {
+        if ($unparsedBarcode[$i] == $spacer) {
+            $barcode = substr($unparsedBarcode, 0, $i);
+            $index = substr($unparsedBarcode, $i + 1) + 0;
+        }
     }
 }
 ?>
